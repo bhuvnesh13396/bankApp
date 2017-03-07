@@ -47,9 +47,18 @@ public class SaveServlet extends HttpServlet {
         Customer c=new Customer();
         c.setName(name);
         c.setPassword(password);
-        c.setBalance(1000);
-        int status=CustomerDao.saveCustomerDetails(c);
         
+        c.setBalance(1000);
+
+        Pair pa=new Pair();
+        pa=CustomerDao.saveCustomerDetails(c);
+        int status=pa.status;
+        int id=pa.id;
+        
+        c.setId(id);
+        
+        System.out.println(id);
+               
         if(status>0){
         	  out.print("<p>Record saved successfully!</p>");  
               request.getRequestDispatcher("index.html").include(request, response); 

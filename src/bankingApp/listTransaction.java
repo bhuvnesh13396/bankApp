@@ -35,16 +35,7 @@ public class listTransaction extends HttpServlet {
 		
 		response.setContentType("text/html");
 		PrintWriter out=response.getWriter();
-		/*
-		Cookie ck[]=request.getCookies();
-		String n="";
-		if(ck!=null){
-			 n=ck[0].getValue();
-			
 		
-		}
-		
-		*/
 		
 		HttpSession session=request.getSession();
 		Customer cust=(Customer)session.getAttribute("c");
@@ -53,22 +44,29 @@ public class listTransaction extends HttpServlet {
 		String acc=request.getParameter("debited_acc");
 		int debited_acc=Integer.parseInt(acc);
 		Transaction t=CustomerDao.ListTransaction(debited_acc);
-		
-		out.println(acc+" credited to following persons");
-		for(int i=0;i<t.result1.size();i++){
-			out.print("<h5>"+t.result1.get(i)+"          "+t.amount1.get(i)+ "</h5>" );
-		}
-		out.println("<br/");
-		out.println("<br/");
-		out.println("<br/");
-		
-		
-		out.println("<p>" + acc+" debited from following persons" +"</p>");
-		
-		for(int i=0;i<t.result2.size();i++){
+		if(t==null){
+			
+			out.println("Please enter your own account number..!!");
+			
+		}else{
+			out.println(acc+" credited to following persons");
+			for(int i=0;i<t.result1.size();i++){
+				out.print("<h5>"+t.result1.get(i)+"          "+t.amount1.get(i)+ "</h5>" );
+			}
+			out.println("<br/");
+			out.println("<br/");
+			out.println("<br/");
+			
+			
+			out.println("<p>" + acc+" debited from following persons" +"</p>");
+			
+			for(int i=0;i<t.result2.size();i++){
 
-			out.println("<h5>"+t.result2.get(i)+ "          "+t.amount2.get(i)+"</h5>");
+				out.println("<h5>"+t.result2.get(i)+ "          "+t.amount2.get(i)+"</h5>");
+			}
+			
 		}
+		
 		
 		
 	}

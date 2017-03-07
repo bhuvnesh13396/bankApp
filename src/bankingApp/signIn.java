@@ -52,7 +52,12 @@ public class signIn extends HttpServlet {
 		c.setName(name);
 		c.setPassword(password);
 		
+		
+		
 		//int status=CustomerDao.userSignIn(c);
+		int id=CustomerDao.getCustomerId(name, password);
+		c.setId(id);
+		
 		Customer status=CustomerDao.userSign(c);
 		if(status != null){
 			out.print("You are succesfully logged in !");

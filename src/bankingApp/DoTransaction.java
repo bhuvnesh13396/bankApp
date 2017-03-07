@@ -57,6 +57,8 @@ public class DoTransaction extends HttpServlet {
 		HttpSession session=request.getSession();
 		Customer cust=(Customer)session.getAttribute("c");
 		
+		System.out.println(cust.getId());
+		
 		boolean check=	CustomerDao.TranserAmount(credited_acc ,debited_acc,amount,cust.getId());
 		if(check==true){
 			out.println("Transaction Succesfull..!!");

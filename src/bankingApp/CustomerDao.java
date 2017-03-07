@@ -22,8 +22,29 @@ public class CustomerDao{
 		
 	}
 	
-	public static int saveCustomerDetails(Customer c){
+	public static int getCustomerId(String name,String password){
+		String query="select cust_id from cust_details where name='"+name+"' and password='"+password+"' ";
+		int id=0;
+		try{
+			
+			Connection con=CustomerDao.getConnection();
+			Statement stmt=con.createStatement();
+			ResultSet rs=stmt.executeQuery(query);
+			
+			if(rs.next()){
+				id=rs.getInt(1);
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return id;
+	}
+	
+	public static Pair saveCustomerDetails(Customer c){
 		int status=0;
+		int auto=0;
 		try{
 			
 		
@@ -37,7 +58,7 @@ public class CustomerDao{
 		
 		status=ps.executeUpdate();
 		
-		int auto=0;
+		 auto=0;
         ResultSet rs = ps.getGeneratedKeys();
         if (rs.next()) {
         auto=rs.getInt(1);
@@ -56,8 +77,11 @@ public class CustomerDao{
 			e.printStackTrace();
 		}
 		
-		return status;
+		Pair p=new Pair();
+		p.id=auto;
+		p.status=status;
 		
+		return p;
 	}
 	
 	public static int userSignIn(Customer c){
@@ -134,6 +158,13 @@ public class CustomerDao{
 		String query="select balance from account where cust_id='"+c_id+"';";
 		
 		boolean tranferable=false;
+		
+		boolean validate_credited_acc=CustomerDao.ValidateAccount(credited_acc);
+		boolean validate_debited_acc=CustomerDao.ValidateParticularUserAccount(c_id,debited_acc);
+		
+		if(validate_credited_acc==false ||  validate_debited_acc==false) 
+			return false;
+		
 		try{
 			Connection con=CustomerDao.getConnection();
 			Statement stmt = con.createStatement();
@@ -154,9 +185,9 @@ public class CustomerDao{
 					int status=ps.executeUpdate();
 
 					
-					String query1="update account set balance=balance-\""+amount+"\" where cust_id =\""+c_id+"\"";
+					String query1="update account set balance=balance-'"+amount+"' where cust_id ='"+c_id+"' and acc_no='"+debited_acc+"' ";
 					
-					String query2="update account set balance=balance+\""+amount+"\"where cust_id =\""+c_id+"\"";
+					String query2="update account set balance=balance+'"+amount+"' where acc_no='"+credited_acc+"' ";
 					
 					stmt.executeUpdate(query1);
 					stmt.executeUpdate(query2);
@@ -177,6 +208,10 @@ public class CustomerDao{
 	}
 	
 	public static Transaction ListTransaction(int userAccNo){
+		
+		boolean ret=CustomerDao.ValidateAccount(userAccNo);
+		if(ret==false) 
+			return null;
 
 		String query1="select credited_acc from transaction where debited_acc='"+userAccNo+"';";
 		String query2="select debited_acc from transaction where credited_acc='"+userAccNo+"';";
@@ -191,7 +226,6 @@ public class CustomerDao{
 			ResultSet rs=stmt.executeQuery(query1);
 			
 			while(rs.next()){
-				
 				String tmp=rs.getString("credited_acc");
 				t.result1.add(tmp);
 			}
@@ -250,6 +284,51 @@ public class CustomerDao{
 		 
 		 return status;
 	        
+	}
+	
+	public static boolean ValidateAccount(int acc_no){
+		// Validate debited_acc whether it belongs to that particular user or not.
+		String query1="select acc_no from account where acc_no='"+acc_no+"'";
+		boolean ret=false;
+		try{
+			Connection con=CustomerDao.getConnection();
+			Statement stmt=con.createStatement();
+			ResultSet rs=stmt.executeQuery(query1);
+			
+			if(rs.next()){
+				ret=true;
+			}else{
+				ret=false;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return ret;
+	}
+	
+	public static boolean ValidateParticularUserAccount(int c_id,int account_no){
+		String query="select acc_no from account where cust_id='"+c_id+"' ";
+		boolean ret=false;
+		try{
+			Connection con=CustomerDao.getConnection();
+			Statement stmt=con.createStatement();
+			ResultSet rs=stmt.executeQuery(query);
+			
+			while(rs.next()){
+				
+				int acc=rs.getInt(1);
+				if(acc==account_no){
+					ret=true;
+					break;
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return ret;
+		
 	}
 	
 	
