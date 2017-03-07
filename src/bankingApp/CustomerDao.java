@@ -207,11 +207,13 @@ public class CustomerDao{
 		
 	}
 	
-	public static Transaction ListTransaction(int userAccNo){
+	public static Transaction ListTransaction(int userAccNo,int cid,String name){
 		
-		boolean ret=CustomerDao.ValidateAccount(userAccNo);
+		boolean ret=CustomerDao.ValidateParticularUserAccount(cid,userAccNo);
 		if(ret==false) 
 			return null;
+		
+		System.out.println(ret);
 
 		String query1="select credited_acc from transaction where debited_acc='"+userAccNo+"';";
 		String query2="select debited_acc from transaction where credited_acc='"+userAccNo+"';";

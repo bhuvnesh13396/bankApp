@@ -43,7 +43,7 @@ public class listTransaction extends HttpServlet {
 		
 		String acc=request.getParameter("debited_acc");
 		int debited_acc=Integer.parseInt(acc);
-		Transaction t=CustomerDao.ListTransaction(debited_acc);
+		Transaction t=CustomerDao.ListTransaction(debited_acc,cust.getId(),cust.getName());
 		if(t==null){
 			
 			out.println("Please enter your own account number..!!");

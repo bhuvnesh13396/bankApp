@@ -53,18 +53,29 @@ public class DoTransaction extends HttpServlet {
 		int credited_acc=Integer.parseInt(credit);
 		int amount=Integer.parseInt(amt);
 		
-
-		HttpSession session=request.getSession();
-		Customer cust=(Customer)session.getAttribute("c");
-		
-		System.out.println(cust.getId());
-		
-		boolean check=	CustomerDao.TranserAmount(credited_acc ,debited_acc,amount,cust.getId());
-		if(check==true){
-			out.println("Transaction Succesfull..!!");
+		if(amount>0){
+			
+			
+			
+			HttpSession session=request.getSession();
+			Customer cust=(Customer)session.getAttribute("c");
+			
+			System.out.println(cust.getId());
+			
+			boolean check=	CustomerDao.TranserAmount(credited_acc ,debited_acc,amount,cust.getId());
+			if(check==true){
+				out.println("Transaction Succesfull..!!");
+			}else{
+				out.println("Sorry..Transaction Unsuccesfull..!!");
+				out.println("Please check account number are valid or balance you have enough balance for this transaction..!!");
+				request.getRequestDispatcher("doTransaction.html").include(request, response);
+			}
+			
 		}else{
-			out.println("Sorry.. You do not have enough balance for this transaction to executed.Please enter lower amount..!!");
+			out.println("Please enter amount greater than 0..!!");
+			request.getRequestDispatcher("doTransaction.html").include(request, response);
 		}
+		
 		
 		out.close();
 	}
